@@ -57,7 +57,7 @@ A1        A1           PWM*, ADC**
 A2        A6           PWM*, ADC**
 
 *  Note: These pins can also function as 3.3V
-         PMW outputs or 3.3V Servo outputs.
+         PWM outputs or 3.3V Servo outputs.
 
 ** Note: ADC inputs are 3.3V max.
 ```
@@ -459,7 +459,7 @@ You can use to it detect tilt, orientation or vibrations.
 
 The TMP36 is a low voltage, precision centigrade temperature sensor. It provides a voltage output that is linearly proportional to the Celsius (centigrade) temperature. The TMP36 does not require any external calibration to provide typical accuracies of ±1°C at +25°C and ±2°C over the −40°C to +125°C temperature range.
 
-[Here is an example](http://docs.spark.io/#/examples) of how you could use it the Core.
+[Here is an example](http://docs.spark.io/examples/#measuring-the-temperature) of how you could use it the Core.
 
 [Datasheet >](http://www.analog.com/static/imported-files/data_sheets/TMP35_36_37.pdf)
 

@@ -80,9 +80,11 @@ Currently the application supports the creation of up to 4 different Spark funct
 
 In order to register a Spark function, the user provides the `funcKey`, which is the string name used to make a POST request and a `funcName`, which is the actual name of the function that gets called in the Spark app. The Spark function can return any integer; `-1` is commonly used for a failed function call.
 
-The length of the `funcKey` is limited to a max of 12 characters. If you declare a function name longer than 12 characters it will be truncated to 12 characters. Example: Spark.function("someFunction1", ...); exposes a function called someFunction and not someFunction1
+The length of the `funcKey` is limited to a max of 12 characters. If you declare a function name longer than 12 characters it will be truncated to 12 characters. 
 
-A Spark function is set up to take one argument of the [String](http://arduino.cc/en/Reference/StringObject) datatype. This argument length is limited to a max of 63 characters.
+Example: Spark.function("someFunction1", ...); exposes a function called someFunction and not someFunction1
+
+A Spark function is set up to take one argument of the [String](http://docs.spark.io/firmware/#language-syntax-string-class) datatype. This argument length is limited to a max of 63 characters.
 
 ```cpp
 // EXAMPLE USAGE
@@ -105,9 +107,9 @@ int brewCoffee(String command)
   // look for the matching argument "coffee" <-- max of 64 characters long
   if(command == "coffee")
   {
-    // do something here
-    activateWaterHeater();
-    activateWaterPump();
+    // some example functions you might have
+    //activateWaterHeater();
+    //activateWaterPump();
     return 1;
   }
   else return -1;
@@ -257,11 +259,10 @@ Spark.subscribe("the_event_prefix", theHandler, MY_DEVICES);
 
 ---
 
-In the near future, you'll also be able to subscribe to events from a single Core by specifying the Core's ID.
+You are also able to subscribe to events from a single Core by specifying the Core's ID.
 
 ```cpp
 // Subscribe to events published from one Core
-// COMING SOON!
 Spark.subscribe("motion/front-door", motionHandler, "55ff70064989495339432587");
 ```
 
@@ -433,7 +434,7 @@ Spark.sleep(5);
 ```
 `Spark.sleep(int seconds)` does NOT stop the execution of user code (non-blocking call).  User code will continue running while the Wi-Fi module is in standby mode. During sleep, WiFi.status() will return WIFI_OFF.  Once sleep time has expired and the Wi-FI module attempts reconnection, WiFi.status() will return value WIFI_CONNECTING and WIFI_ON.
 
-`Spark.sleep(SLEEP_MODE_DEEP, int seconds)` can be used to put the entire Core into a *deep sleep* mode. In this particular mode, the Core shuts down the Wi-Fi chipset (CC3000) and puts the microcontroller in a stand-by mode.  When the Core awakens from deep sleep, it will reset the Core and run all user code from the beginning with no values being maintained in memory from before the deep sleep.  As such, it is recommended that deep sleep be called only after all user code has completed.
+`Spark.sleep(SLEEP_MODE_DEEP, int seconds)` can be used to put the entire Core into a *deep sleep* mode. In this particular mode, the Core shuts down the Wi-Fi chipset (CC3000) and puts the microcontroller in a stand-by mode.  When the Core awakens from deep sleep, it will reset the Core and run all user code from the beginning with no values being maintained in memory from before the deep sleep.  As such, it is recommended that deep sleep be called only after all user code has completed. The Standby mode is used to achieve the lowest power consumption.  After entering Standby mode, the SRAM and register contents are lost except for registers in the backup domain.
 
 ```C++
 // SYNTAX
@@ -447,8 +448,8 @@ Spark.sleep(SLEEP_MODE_DEEP,60);
 ```
 The Core will automatically *wake up* and reestablish the WiFi connection after the specified number of seconds.
 
-`Spark.sleep(uint16_t wakeUpPin, uint16_t edgeTriggerMode)` can be used to put the entire Core into a *stop* mode with *wakeup on interrupt*. In this particular mode, the Core shuts down the Wi-Fi chipset (CC3000) and puts the microcontroller in a stop mode with configurable wakeup pin and edge triggered interrupt. When the specific interrupt arrives, the Core awakens from stop mode, it will behave as if the Core is reset and run all user code from the beginning with no values being maintained in memory from before the stop mode. As such, it is recommended that stop mode be called only after all user code has completed.
-It is mandatory to update the *bootloader* (https://github.com/spark/core-firmware/tree/bootloader-patch-update) for proper functioning of this mode.
+`Spark.sleep(uint16_t wakeUpPin, uint16_t edgeTriggerMode)` can be used to put the entire Core into a *stop* mode with *wakeup on interrupt*. In this particular mode, the Core shuts down the Wi-Fi chipset (CC3000) and puts the microcontroller in a stop mode with configurable wakeup pin and edge triggered interrupt. When the specific interrupt arrives, the Core awakens from stop mode, it will behave as if the Core is reset and run all user code from the beginning with no values being maintained in memory from before the stop mode. As such, it is recommended that stop mode be called only after all user code has completed. (Note: The new Spark Photon firmware will not reset before going into stop mode so all the application variables are preserved after waking up from this mode. The voltage regulator is put in low-power mode. This mode achieves the lowest power consumption while retaining the contents of SRAM and registers.)
+It is mandatory to update the *bootloader* (https://github.com/spark/core-firmware/tree/bootloader-patch-update) for proper functioning of this mode(valid only for Spark Core).
 
 ```C++
 // SYNTAX
@@ -470,8 +471,9 @@ Spark.sleep(D0,RISING);
     - RISING to trigger when the pin goes from low to high,
     - FALLING for when the pin goes from high to low.
 
-`Spark.sleep(uint16_t wakeUpPin, uint16_t edgeTriggerMode, long seconds)` can be used to put the entire Core into a *stop* mode with *wakeup on interrupt* or *wakeup after specified seconds*. In this particular mode, the Core shuts down the Wi-Fi chipset (CC3000) and puts the microcontroller in a stop mode with configurable wakeup pin and edge triggered interrupt or wakeup after the specified seconds . When the specific interrupt arrives or upon reaching configured seconds, the Core awakens from stop mode, it will behave as if the Core is reset and run all user code from the beginning with no values being maintained in memory from before the stop mode. As such, it is recommended that stop mode be called only after all user code has completed.
-It is mandatory to update the *bootloader* (https://github.com/spark/core-firmware/tree/bootloader-patch-update) for proper functioning of this mode.
+`Spark.sleep(uint16_t wakeUpPin, uint16_t edgeTriggerMode, long seconds)` can be used to put the entire Core into a *stop* mode with *wakeup on interrupt* or *wakeup after specified seconds*. In this particular mode, the Core shuts down the Wi-Fi chipset (CC3000) and puts the microcontroller in a stop mode with configurable wakeup pin and edge triggered interrupt or wakeup after the specified seconds . When the specific interrupt arrives or upon reaching configured seconds, the Core awakens from stop mode, it will behave as if the Core is reset and run all user code from the beginning with no values being maintained in memory from before the stop mode. As such, it is recommended that stop mode be called only after all user code has completed. (Note: The new Spark Photon firmware will not reset before going into stop mode so all the application variables are preserved after waking up from this mode. The voltage regulator is put in low-power mode. This mode achieves the lowest power consumption while retaining the contents of SRAM and registers.)
+
+It is mandatory to update the *bootloader* (https://github.com/spark/core-firmware/tree/bootloader-patch-update) for proper functioning of this mode(valid only for Spark Core).
 
 ```C++
 // SYNTAX
@@ -740,7 +742,7 @@ Write a `HIGH` or a `LOW` value to a digital pin.
 digitalWrite(pin, value);
 ```
 
-If the pin has been configured as an OUTPUT with pinMode(), its voltage will be set to the corresponding value: 3.3V for HIGH, 0V (ground) for LOW.
+If the pin has been configured as an `OUTPUT` with `pinMode()` or if previously used with `analogWrite()`, its voltage will be set to the corresponding value: 3.3V for HIGH, 0V (ground) for LOW.
 
 `digitalWrite()` takes two arguments, `pin`: the number of the pin whose value you wish to set and `value`: `HIGH` or `LOW`.
 
@@ -810,7 +812,7 @@ The analogWrite function has nothing to do with the analog pins or the analogRea
 analogWrite(pin, value);
 ```
 
-`analogWrite()` takes two arguments, `pin`: the number of the pin whose value you wish to set and `value`: the duty cycle: between 0 (always off) and 255 (always on).
+`analogWrite()` takes two arguments, `pin`: the number of the pin whose value you wish to set and `value`: the duty cycle: between 0 (always off) and 255 (always on).  NOTE: `pinMode(pin, OUTPUT);` is required before calling `analogWrite(pin, value);` or else the `pin` will not be initialized as a PWM output and set to the desired duty cycle.
 
 `analogWrite()` does not return anything.
 
@@ -2596,9 +2598,16 @@ System
 Resets the device, just like hitting the reset button or powering down and back up.
 
 ```C++
-// Reset every 60 seconds
+uint32_t lastReset = 0;
+
+void setup() {
+    lastReset = millis();
+}
+
 void loop() {
-  if (60000 > millis()) {
+  // Reset after 5 minutes of operation
+  // ==================================
+  if (millis() - lastReset > 5*60000UL) {
     System.reset();
   }
 }
@@ -4268,19 +4277,19 @@ Returns:
 
 ### concat()
 
-Combines, or *concatenates* two strings into one new String. The second string is appended to the first, and the result is placed in a new String.
+Combines, or *concatenates* two strings into one string. The second string is appended to the first, and the result is placed in the original string.
 
 ```
 SYNTAX:
 
-string.concat(string, string2)
+string.concat(string2)
 ```
 
 Parameters:
 
   * string, string2: variables of type String
 
-Returns: new String that is the combination of the original two Strings
+Returns: None
 
 ### endsWith()
 
